@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+	<style>
+		body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+h1{
+	width: 100%;
+	height: 40px;
+	margin: 0 auto;
+}
+.wrap{
+	width: 400px;
+	height: 400px;
+	border: 1px solid #000;
+}
+.del{
+	width: 20px;
+	height: 20px;
+	color: #F00;
+	font-size: 20px;
+	text-indent: 20px;
+}
+.nr{
+	width: 400px;
+	height: auto;
+	font-size: 16px;
+	color: #000;
+	display: block;
+	text-indent: 40px;
+}
+	</style>
+</head>
+<body>
+	<h1>留言板</h1>
+	<div class="wrap" id="con"></div>
+	
+		 
+	<div class="cont">
+		<input type="text" value="" id="inp">
+		<input type="text" value="" id="inp1">
+		<button id="btn">提交</button> 
+	</div>
+
+	<script>
+    $(function(){
+      $('#btn').click(function(){
+         var val=$('#inp').val();
+        var val2=$('#inp1').val();
+        console.log(val)
+         if(val!==''||val2!==''){
+           $.ajax({
+            url:"http://localhost:3000/list",
+            type:'post',
+            dataType:'json',
+            data:{name:val,name2:val2},
+            success:function(e){
+                 $.ajax({
+                url:"http://localhost:3000/select",
+                type:'post',
+                dataType:'json',
+                success:function(e){
+                  for(var i in e){
+                    var zfc = '';
+                    zfc+='<p>'+e[i].name+'<span data-id='+e[i].id+'>×</span></p>'
+                  }
+                  $('#con').append(zfc)
+                  $('span').click(function(){
+                    var id=$(this).attr('data-id')
+                    var This=$(this)
+                    $.ajax({
+                            url:"http://localhost:3000/delete",
+                            type:"POST",
+                            data:{id:id},
+                            success:function(e){
+                                This.parent().remove()
+                            }
+                        })
+                  })
+                  
+                }
+            })
+            }
+        })
+         }
+    })
+    })
+			$.ajax({
+            url:"http://localhost:3000/select",
+            type:'post',
+            dataType:'json',
+            success:function(e){
+              console.log(e)
+            	for(var i in e){
+            		$('#con').append('<p>'+e[i].name+'<span data-id='+e[i].id+'>×</span></p>')
+            	}
+            	$('span').click(function(){
+            		var id=$(this).attr('data-id')
+            		var This=$(this)
+            		$.ajax({
+                        url:"http://localhost:3000/delete",
+                        type:"POST",
+                        data:{id:id},
+                        success:function(e){
+                            This.parent().remove()
+                        }
+                    })
+            	})
+            	
+            }
+        })
+
+
+
+</script>
+</body>
+</html>
